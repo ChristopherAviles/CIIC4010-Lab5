@@ -66,6 +66,7 @@ public class MyMouseAdapter extends MouseAdapter {
 			if ((myPanel.mouseDownGridX == -1) || (myPanel.mouseDownGridY == -1)) {
 				//Had pressed outside
 				//Do nothing
+				
 			} else {
 				if ((gridX == -1) || (gridY == -1)) {
 					//Is releasing outside
@@ -75,31 +76,133 @@ public class MyMouseAdapter extends MouseAdapter {
 						//Released the mouse button on a different cell where it was pressed
 						//Do nothing
 					} else {
-						//Released the mouse button on the same cell where it was pressed
-						if ((gridX == 0) || (gridY == 0)) {
-							//On the left column and on the top row... do nothing
+						if ((gridY == 0)) {
+							//On the top row... do nothing
 						} else {
-							//On the grid other than on the left column and on the top row:
-							Color newColor = null;
-							switch (generator.nextInt(5)) {
-							case 0:
-								newColor = Color.YELLOW;
-								break;
-							case 1:
-								newColor = Color.MAGENTA;
-								break;
-							case 2:
-								newColor = Color.BLACK;
-								break;
-							case 3:
-								newColor = new Color(0x964B00);   //Brown (from http://simple.wikipedia.org/wiki/List_of_colors)
-								break;
-							case 4:
-								newColor = new Color(0xB57EDC);   //Lavender (from http://simple.wikipedia.org/wiki/List_of_colors)
-								break;
+						//Released the mouse button on the same cell where it was pressed
+							if ((myPanel.mouseDownGridX == 0)) {
+								//On the left gray column paint the complete row of the pressed square, but not the gray column
+								for (int row = 1; row < 10; row++) {
+
+									int rowNumber = myPanel.mouseDownGridY;
+									Color currentColor = myPanel.colorArray[row][rowNumber];
+									Color newColor = null;
+
+									switch (generator.nextInt(5)) {
+									case 0:
+										if (!currentColor.equals(Color.YELLOW)) {
+											newColor = Color.YELLOW;
+											break;
+										}
+									case 1:
+										if (!currentColor.equals(Color.MAGENTA)) {
+											newColor = Color.MAGENTA;
+											break;
+										}
+									case 2:
+										if (!currentColor.equals(Color.BLACK)) {
+											newColor = Color.BLACK;
+											break;
+										}	
+									case 3:
+										Color brown = new Color(0x964B00);   //Brown (from http://simple.wikipedia.org/wiki/List_of_colors)
+										if (!currentColor.equals(brown)) {
+											newColor = brown;
+											break;
+										}
+									case 4:
+										Color lavender = new Color(0xB57EDC);   //Lavender (from http://simple.wikipedia.org/wiki/List_of_colors)
+										if (!currentColor.equals(lavender)) {
+											newColor = lavender;
+											break;
+										}
+										else {										//Paints the square a random color that is not the current one, so that the switch does not give error if it ends.
+											int randomColor = generator.nextInt(4);
+											if (randomColor == 0){
+												newColor = Color.YELLOW;
+												break;
+											}
+											else if (randomColor == 1) {
+												newColor = Color.MAGENTA;
+												break;
+											}
+											else if (randomColor == 2) {
+												newColor = Color.BLACK;
+												break;
+											}
+											else {
+												newColor = new Color(0x964B00);
+												break;
+											}
+										}
+									}
+									myPanel.colorArray[row][rowNumber] = newColor;
+									myPanel.repaint();
+								}
+
+							} else {
+								//On the grid other than on the left column and on the top row:
+								Color newColor = null;
+								Color currentColor = myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY];
+
+								switch (generator.nextInt(5)) {
+
+								case 0:
+									if (!currentColor.equals(Color.YELLOW)) {
+										newColor = Color.YELLOW;
+										break;
+									}
+
+								case 1:
+									if (!currentColor.equals(Color.MAGENTA)) {
+										newColor = Color.MAGENTA;
+										break;
+									}
+
+								case 2:
+									if (!currentColor.equals(Color.BLACK)) {
+										newColor = Color.BLACK;
+										break;
+									}
+
+								case 3:
+									Color brown = new Color(0x964B00);   //Brown (from http://simple.wikipedia.org/wiki/List_of_colors)
+									if (!currentColor.equals(brown)) {
+										newColor = brown;
+										break;
+									}
+
+								case 4:
+									Color lavender = new Color(0xB57EDC);   //Lavender (from http://simple.wikipedia.org/wiki/List_of_colors)
+									if (!currentColor.equals(lavender)) {
+										newColor = lavender;
+										break;
+									}
+									else {										//Paints the square a random color that is not the current one, so that the switch does not give error if it ends.
+										int randomColor = generator.nextInt(4);
+										if (randomColor == 0){
+											newColor = Color.YELLOW;
+											break;
+										}
+										else if (randomColor == 1) {
+											newColor = Color.MAGENTA;
+											break;
+										}
+										else if (randomColor == 2) {
+											newColor = Color.BLACK;
+											break;
+										}
+										else {
+											newColor = new Color(0x964B00);
+											break;
+										}
+									}
+								}
+
+
+								myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
+								myPanel.repaint();
 							}
-							myPanel.colorArray[myPanel.mouseDownGridX][myPanel.mouseDownGridY] = newColor;
-							myPanel.repaint();
 						}
 					}
 				}
