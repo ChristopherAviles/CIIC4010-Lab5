@@ -34,7 +34,27 @@ public class MyMouseAdapter extends MouseAdapter {
 			myPanel.repaint();
 			break;
 		case 3:		//Right mouse button
-			//Do nothing
+			Component d = e.getComponent();
+			while (!(d instanceof JFrame)) {
+				d = d.getParent();
+				if (d == null) {
+					return;
+				}
+			}
+			JFrame mySecondFrame = (JFrame) d;
+			MyPanel mySecondPanel = (MyPanel) mySecondFrame.getContentPane().getComponent(0);
+			Insets mySecondInsets = mySecondFrame.getInsets();
+			int xS1 = mySecondInsets.left;
+			int yS1 = mySecondInsets.top;
+			e.translatePoint(-xS1, -yS1);
+			int xS = e.getX();
+			int yS = e.getY();
+			mySecondPanel.x = xS;
+			mySecondPanel.y = yS;
+			mySecondPanel.mouseDownGridX = mySecondPanel.getGridX(xS, yS);
+			mySecondPanel.mouseDownGridY = mySecondPanel.getGridY(xS, yS);
+			mySecondPanel.repaint();
+			
 			break;
 		default:    //Some other button (2 = Middle mouse button, etc.)
 			//Do nothing
@@ -414,11 +434,76 @@ public class MyMouseAdapter extends MouseAdapter {
 				}
 			}
 
-			//
 			myPanel.repaint();
 			break;
 		case 3:		//Right mouse button
-			//Do nothing
+			Component d = e.getComponent();
+			while (!(d instanceof JFrame)) {
+				d = d.getParent();
+				if (d == null) {
+					return;
+				}
+			}
+			JFrame mySecondFrame = (JFrame)d;
+			MyPanel mySecondPanel = (MyPanel) mySecondFrame.getContentPane().getComponent(0);  //Can also loop among components to find MyPanel
+			Insets mySecondInsets = mySecondFrame.getInsets();
+			int xS1 = mySecondInsets.left;
+			int yS1 = mySecondInsets.top;
+			e.translatePoint(-xS1, -yS1);
+			int xS = e.getX();
+			int yS = e.getY();
+			mySecondPanel.x = xS;
+			mySecondPanel.y = yS;
+			if ((mySecondPanel.mouseDownGridX == -1) || (mySecondPanel.mouseDownGridY == -1)) {
+				//Had pressed outside, paint all squares 3 random colors, excluding the gray squares
+
+					int diagonalX = 1;
+					int diagonalY = 1;
+					for (diagonalY = 1; diagonalY < 10 && diagonalX < 10; diagonalY++) {
+
+						Color currentColor = mySecondPanel.colorArray[diagonalY][diagonalX];
+						Color newColor = null;
+
+						switch (generator.nextInt(3)) {
+
+						case 0:
+							if (!currentColor.equals(Color.BLUE)) {
+								newColor = Color.BLUE;
+								break;
+							}
+
+						case 1:
+							if (!currentColor.equals(Color.GREEN)) {
+								newColor = Color.GREEN;
+								break;
+							}
+
+						case 2:
+							if (!currentColor.equals(Color.RED)) {
+								newColor = Color.RED;
+								break;
+							}
+							else {										//Paints the square a random color that is not the current one, so that the switch does not give error if it ends.
+								int randomColor = generator.nextInt(2);
+								if (randomColor == 0){
+									newColor = Color.GREEN;
+									break;
+								}
+								else if (randomColor == 1) {
+									newColor = Color.BLUE;
+									break;
+								}
+							}
+						}
+						mySecondPanel.colorArray[diagonalY][diagonalX] = newColor;
+						mySecondPanel.repaint();
+
+						if (diagonalY == 9) {			//Goes down one row after 10 horizontal squares are painted in the row.
+							diagonalY = 0;
+							diagonalX++;
+						}	
+					}
+			}
 			break;
 		default:    //Some other button (2 = Middle mouse button, etc.)
 			//Do nothing
